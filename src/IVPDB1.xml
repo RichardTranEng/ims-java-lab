@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:dbd xmlns:ns2="http://www.ibm.com/ims/DBD" dbdName="DHIDPHO1" timestamp="1809514430387" xmlSchemaVersion="1" version="04/05/1814.42">
+    <access dbType="HIDAM">
+        <hidam osAccess="OSAM" password="N" datxexit="N">
+            <dataSetContainer>
+                <dataSet ddname="PHO1DD" scan="3" searchA="0" label="DSG1">
+                    <size size="2048"/>
+                    <frspc fbff="0" fspf="0"/>
+                </dataSet>
+            </dataSetContainer>
+        </hidam>
+    </access>
+    <segment name="A1111111" imsName="A1111111" encoding="Cp1047">
+        <hidam label="DSG1">
+            <bytes maxBytes="40"/>
+            <rules insertionRule="L" deletionRule="L" replacementRule="V" insertionLocation="LAST"/>
+            <pointer physicalPointer="TWINBWD" lparnt="N" ctr="Y" paired="N"/>
+        </hidam>
+        <field name="LASTNAME" imsName="A1111111" seqType="U" imsDatatype="C">
+            <startPos>1</startPos>
+            <bytes>10</bytes>
+            <marshaller encoding="Cp1047">
+                <typeConverter>CHAR</typeConverter>
+            </marshaller>
+            <applicationDatatype datatype="CHAR"/>
+        </field>
+        <field name="FIRSTNAME" imsDatatype="C">
+            <startPos>11</startPos>
+            <bytes>10</bytes>
+            <marshaller encoding="Cp1047">
+                <typeConverter>CHAR</typeConverter>
+            </marshaller>
+            <applicationDatatype datatype="CHAR"/>
+        </field>
+        <field name="EXTENTION" imsDatatype="C">
+            <startPos>21</startPos>
+            <bytes>10</bytes>
+            <marshaller encoding="Cp1047">
+                <typeConverter>CHAR</typeConverter>
+            </marshaller>
+            <applicationDatatype datatype="CHAR"/>
+        </field>
+        <field name="ZIPCODE" imsDatatype="C">
+            <startPos>31</startPos>
+            <bytes>10</bytes>
+            <marshaller encoding="Cp1047">
+                <typeConverter>CHAR</typeConverter>
+            </marshaller>
+            <applicationDatatype datatype="CHAR"/>
+        </field>
+    </segment>
+</ns2:dbd>

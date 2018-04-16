@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:psb xmlns:ns2="http://www.ibm.com/ims/PSB" psbName="DFSIVP1" lang="ASSEM" ssaSize="32000" maximumLock="0" onlineDBImageCopy="N" maxq="0" compat="Y" ioAreaSize="32000" gsamRollb="N" userVersion="0" timestamp="1809514430387" xmlSchemaVersion="1">
+    <ioeropn ioeropnConditionCode="0" ioeropnWTOR="N"/>
+    <dbPCB name="PCB01" dbdName="IVPDB1" timestamp="0000000000000" keyLength="10" list="Y" procopt="AP" sb="NO" copies="0">
+        <pcbName>PCB01</pcbName>
+        <senseg name="A1111111"/>
+    </dbPCB>
+</ns2:psb>
