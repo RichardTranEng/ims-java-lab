@@ -55,8 +55,8 @@ public class MyIMSJavaApplication {
 //			ds.setHost("zserveros.centers.ihost.com");
 //			ds.setPortNumber(7013);
 //			ds.setDriverType(driverType);
-//			ds.setUser("em4zims");
-//			ds.setPassword("new4pass");
+//			ds.setUser("********");
+//			ds.setPassword("********");
 //			ds.setDatabaseName("DFSIVP1");
 //			connection = ds.getConnection();
 			
