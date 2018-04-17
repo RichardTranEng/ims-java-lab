@@ -23,14 +23,11 @@ public class MyIMSJavaApplication {
 			// Exercise 4 - Looking at the DL/I translation of the SQL query
 			//displayDliTranslationForSqlQuery();
 			
-			// Exercise 5 - Insert a record into the database with a SQL INSERT and 
-			// validate contents
-			//executeASqlInsertOrUpdate();
-			//executeAndDisplaySqlQuery();
-						
+			// Exercise 5 - Insert a record into the database with a SQL INSERT
 			// Exercise 6 - Updating the database with a SQL UPDATE and validate contents
 			//executeASqlInsertOrUpdate();
 			//executeAndDisplaySqlQuery();
+						
 			
 			// Exercise 7 - Establishing a native IMS connection
 			//createAnImsConnection(2);
@@ -51,25 +48,25 @@ public class MyIMSJavaApplication {
 		if (driverType == 4) {
 			// A Type-4 JDBC connection is used for distributed access over TCP/IP.
 			// Exercise 1: Retrieve a Type-4 JDBC connection and set it to the connection object
-//			IMSDataSource ds = new IMSDataSource();
-//			ds.setHost("zserveros.centers.ihost.com");
-//			ds.setPortNumber(7013);
-//			ds.setDriverType(driverType);
-//			ds.setUser("********");
-//			ds.setPassword("********");
-//			ds.setDatabaseName("DFSIVP1");
-//			connection = ds.getConnection();
+			//IMSDataSource ds = new IMSDataSource();
+			//ds.setHost("sample.host.name");
+			//ds.setPortNumber(5555);
+			//ds.setDriverType(driverType);
+			//ds.setUser("myUser");
+			//ds.setPassword("myPass");
+			//ds.setDatabaseName("PHIDPHO1");
+			//connection = ds.getConnection();
 			
 			
 			// Exercise 2: Change the connection to use a local XML file PHIPHO1.xml
-			IMSDataSource ds = new IMSDataSource();
-			ds.setHost("zserveros.centers.ihost.com");
-			ds.setPortNumber(7013);
-			ds.setDriverType(driverType);
-			ds.setUser("********");
-			ds.setPassword("********");
-			ds.setDatabaseName("xml://DFSIVP1");
-			connection = ds.getConnection();
+			//IMSDataSource ds = new IMSDataSource();
+			//ds.setHost("sample.host.name");
+			//ds.setPortNumber(5555);
+			//ds.setDriverType(driverType);
+			//ds.setUser("myUser");
+			//ds.setPassword("myPass");
+			//ds.setDatabaseName("xml://PHIDPHO1");
+			//connection = ds.getConnection();
 			
 		} else if (driverType == 2) {
 			// A Type-2 JDBC connection is used for local access on the mainframe
@@ -91,7 +88,7 @@ public class MyIMSJavaApplication {
 		DatabaseMetaData dbmd = connection.getMetaData();
 		
 		// Display IMS PCB information
-		ResultSet rs = dbmd.getSchemas("DFSIVP1", null);
+		ResultSet rs = dbmd.getSchemas("PHIDPHO1", null);
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int colCount = rsmd.getColumnCount();
 		
@@ -100,10 +97,11 @@ public class MyIMSJavaApplication {
 			for (int i = 1; i <= colCount; i++) {
 				System.out.println(rsmd.getColumnName(i) + ": " + rs.getString(i));
 			}
+			System.out.println();
 		}
 		
 		// Display IMS segment information
-		rs = dbmd.getTables("DFSIVP1", "PCB01", null, null);
+		rs = dbmd.getTables("PHIDPHO1", "PCB01", null, null);
 		rsmd = rs.getMetaData();
 		colCount = rsmd.getColumnCount();
 		
@@ -112,10 +110,11 @@ public class MyIMSJavaApplication {
 			for (int i = 1; i <= colCount; i++) {
 				System.out.println(rsmd.getColumnName(i) + ": " + rs.getString(i));
 			}
+			System.out.println();
 		}
 		
 		// Display IMS field information
-		rs = dbmd.getColumns("DFSIVP1", "PCB01", "A1111111", null);
+		rs = dbmd.getColumns("PHIDPHO1", "PCB01", "A1111111", null);
 		rsmd = rs.getMetaData();
 		colCount = rsmd.getColumnCount();
 		
@@ -127,6 +126,7 @@ public class MyIMSJavaApplication {
 			System.out.println();
 		}
 		
+		connection.commit();
 		connection.close();
 	}
 
@@ -149,6 +149,7 @@ public class MyIMSJavaApplication {
 			System.out.println();
 		}
 		
+		connection.commit();
 		connection.close();
 	}
 
@@ -169,14 +170,14 @@ public class MyIMSJavaApplication {
 		Connection connection = createAnImsConnection(4);
 		
 		// Exercise 5 - Issue a SQL INSERT
-//		sql = "INSERT INTO PCB01.A1111111 (LASTNAME, FIRSTNAME, EXTENTION, ZIPCODE) VALUES ('BAGGINS', 'FRODO', '123456A', '12345')";
-//		Statement st = connection.createStatement();
-//		st.executeUpdate(sql);
+		//sql = "INSERT INTO PCB01.A1111111 (LASTNAME, FIRSTNAME, EXTENTION, ZIPCODE) VALUES ('BAGGINS', 'FRODO', '123456A', '12345')";
+		//Statement st = connection.createStatement();
+		//System.out.println("Inserted " + st.executeUpdate(sql) + " record");
 		
 		// Exercise 6 - Issue a SQL UPDATE
-		sql = "UPDATE PCB01.A1111111 SET FIRSTNAME='MATT' WHERE LASTNAME='TRAN'";
-		Statement st = connection.createStatement();
-		System.out.println("Updated: " + st.executeUpdate(sql));
+		//sql = "UPDATE PCB01.A1111111 SET FIRSTNAME='BILBO' WHERE LASTNAME='BAGGINS'";
+		//Statement st = connection.createStatement();
+		//System.out.println("Updated " + st.executeUpdate(sql) + " record(s)");
 		
 		connection.commit();
 		connection.close();

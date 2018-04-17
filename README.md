@@ -60,12 +60,12 @@ IMSDataSource ds = new IMSDataSource();
 ```
 
 Now use the appropriate setters on your IMSDataSource object to set the following parameters:
-1. **host**: zserveros.centers.ihost.com
-2. **port number**: 7013
+1. **host**: To be provided by the lab instructor
+2. **port number**: To be provided by the lab instructor
 3. **driver type**: 4
 4. **user**: To be provided by the lab instructor
 5. **password**: To be provided by the lab instructor
-6. **database name**: DFSIVP1 *<-- This is actually the PSB name*
+6. **database name**: PHIDPHO1 *<-- This is actually the PSB name*
 
 Setter example for host:
 
@@ -131,7 +131,7 @@ The `DatabaseMetaData` class contains [several methods](https://docs.oracle.com/
 
 ```java
 // Display IMS PCB information
-ResultSet rs = dbmd.getSchemas("DFSIVP1", null);
+ResultSet rs = dbmd.getSchemas("PHIDPHO1", null);
 ResultSetMetaData rsmd = rs.getMetaData();
 int colCount = rsmd.getColumnCount();
 		
@@ -145,28 +145,32 @@ for (int i = 1; i <= colCount; i++) {
 In addition to using DatabaseMetaData for discovery of the database, we also used ResultSetMetaData above to identify information on the ResultSet returned by the getSchemas() call. We will be used ResultSetMetaData in most of the following exercises in order to display a readable output like the following:
 
 ```
-TBD
+TABLE_SCHEM: PCB01
+TABLE_CATALOG: PHIDPHO1
+PCB_PROCESSING_OPTIONS: AP
+DBD_NAME: DHIDPHO1
+DBD_TIMESTAMP: 1810711232054
 ```
 
 We can dig even further into the database segments and fields with the following query. Use the same format as above to process the ResultSet object:
 
 ```java
 // Display IMS segment information
-rs = dbmd.getTables("DFSIVP1", "PCB01", null, null);
+rs = dbmd.getTables("PHIDPHO1", "PCB01", null, null);
 
 // Display IMS field information
-rs = dbmd.getColumns("DFSIVP1", "PCB01", "A1111111", null);
+rs = dbmd.getColumns("PHIDPHO1", "PCB01", "A1111111", null);
 ```
 
 You'll notice that there is a lack of field information for the phonebook database. Traditionally, additional metadata information would be stored in a COBOL copybook or a PL/I include file. It would be up to the IMS Database Administrator (DBA) and IMS System Programmer to incorporate this information into the IMS catalog. 
 
 Since we don't have either available, we're going to take advantage of a little known [secret](https://imsinsiders.wordpress.com/2018/03/15/how-to-try-out-an-ims-catalog-without-an-actual-catalog-using-the-ims-jdbc-driver/). The way the IMS JDBC driver retrieves metadata from the IMS catalog is through the IMS GUR DL/I call which returns an XML representation of the requested resource. For now, we will proxy our local XML file instead of issuing a GUR for additional metadata. You should see the two files we will be referencing in the /src directory for both our PSB and DBD:
-* DFSIVP1.xml
+* PHIDPHO1.xml
 * IVPDB1.xml
 
 Let's modify our connection property in the `createAnImsConnection()` method to point to our local XML file:
 ```java
-ds.setDatabaseName("xml://DFSIVP1");
+ds.setDatabaseName("xml://PHIDPHO1");
 ```
 
 Now re-run the `DatabaseMetaData.getColumns()` method to view the additional fields. You should now see the following additional fields:
@@ -181,14 +185,131 @@ That completes Exercise 2. Let's go ahead and disable the following line in the 
 ```
 
 ##### Exercise 3: Querying the database
+Now that we have a good understanding of what our database looks like. We can go ahead and start building queries against the database. Let's start by uncommenting the following line in the `main()` method.
+
+```java
+executeAndDisplaySqlQuery();
+```
+
+Let's now navigate to the `executeAndDisplaySqlQuery()` method and write our SQL SELECT statement to issue a read request against the database. 
+
+An initial query has already been written `SELECT * FROM PCB01.A1111111`. This is based off of our database metadata discovery where we know the PSB PHIDPHO1 contains a PCB PCB01 which has a segment A111111 that contains fields related to a phonebook.
+
+The way we would execute a read query is through the `Statement.executeQuery()` method. We can get a `Statement` object off of the `Connection`. The following code shows how to do that.
+
+```java
+Statement st = connection.createStatement();
+ResultSet rs = st.executeQuery(sql);
+```
+
+You can process the `ResultSet` in a similar manner to what we did in Exercise 2. You should see output similar to the following:
+```
+LASTNAME: LAST1     
+FIRSTNAME: FIRST1    
+EXTENTION: 8-111-1111
+ZIPCODE: D01/R01 
+```
+
 
 ##### Exercise 4: Looking at how IMS breaks down SQL queries
+The native query language for an IMS database is DL/I. In order for IMS to process SQL queries, those queries will need to be translated into the DL/I equivalent. Sometimes, it's useful for debugging or tuning purposes to look at how a SQL query is broken down. 
+
+So where is this translation being done? In this case, the IMS JDBC driver handles all of the translation. It exposes the translation through the `Connection.nativeSql()` method
+
+Let's take a look at the the translation for the previous SQL query with the following code snippet:
+```java
+String sql = "SELECT * FROM PCB01.A1111111";
+System.out.println("DL/I translation for '" + sql + "' is:");
+System.out.println(connection.nativeSQL(sql));
+```
+
+You should see the following output in your console:
+```
+DL/I translation for 'SELECT * FROM PCB01.A1111111' is:
+GU   A1111111 
+
+(LOOP)
+GN   A1111111 
+
+NOTE: GU/GN VALID only if not overruled by CONCUR_UPDATABLE ResultSet concurrency
+```
+
+The SQL SELECT query which can be considered a batch retrieve, is translated into a series of singleton DL/I calls. The first call is to a **GET UNIQUE** which retrieves the first record to match a qualifier. The IMS JDBC driver will then repeatedly call **GET NEXT** until it retrieves all records from the database that match the qualifier.
+
+Feel free to come back to this exercise in order to look at the translation for the SQL statements in Exercise 5 and 6. For now, we'll go ahead and comment the following line in the `main()` method.
+
+```java
+//executeAndDisplaySqlQuery();
+```
+
 
 ##### Exercise 5: Inserting a record into the database
+Now that we have a base understanding of what the IMS database looks like and what data resides in that database, we'll go ahead and insert in a new phonebook record. Let's start off by uncommenting the following lines in the `main()` method
+```java
+executeASqlInsertOrUpdate();
+executeAndDisplaySqlQuery();
+```
+
+Then navigate to the `executeASqlInsertOrUpdate()` method.
+
+The database segment that we have been looking at is keyed off of the LASTNAME parameter, this means we will need a unique last name value from what's already in the database (which you should know from Exercise 3).
+
+The format for a SQL INSERT statement can be found [here](https://www.w3schools.com/sql/sql_insert.asp). Similar to what we did for a SQL SELECT, we will be using a `Statement` object to issue the SQL statement. However instead of using the `executeQuery()` method which is for database reads, we will want to use the `executeUpdate()` method for database inserts, updates and deletes.
+
+The following code snippet will insert a record into the database. Make sure to modify the values for the entry you want to add.
+```java
+sql = "INSERT INTO PCB01.A1111111 (LASTNAME, FIRSTNAME, EXTENTION, ZIPCODE) VALUES ('BAGGINS', 'FRODO', '123456A', '12345')";
+Statement st = connection.createStatement();
+System.out.println("Inserted " + st.executeUpdate(sql) + " record");
+```		
+
+Run the Java application and verify that your new record was inserted properly. You should see something like the following in your output:
+```
+Inserted 1 record
+
+Displaying query results
+LASTNAME: BAGGINS   
+FIRSTNAME: FRODO     
+EXTENTION: 123456A   
+ZIPCODE: 12345     
+```
+
+What happens if you try to insert the same record again? We would expect an error as we can't have two records with the same unique key. Try running your application again. You should see the following error message
+```
+com.ibm.ims.drda.base.DrdaException: An error occurred processing the database DHIDPHO1. AIB return code: 0x900. AIB reason code: 0x0. AIB error code extension: 0x0. DBPCB status code: II.
+ ```
+ 
+You'll notice that the we get some AIB return and reason code in addition to a DBPCB status code. This error information is actually returned by the IMS database as a result of attempting to execute the translated DL/I query. Looking at the [IMS knowledge center](https://www.ibm.com/support/knowledgecenter/en/SSEPH2_15.1.0/com.ibm.ims15.doc.msgs/msgs/ii.htm), we can see that the II status code is returned on a DL/I ISRT call when a record already exists in the database.
+
+Before moving on to the next exercise let's make sure we comment out any code we added to the `executeASqlInsertOrUpdate()` method.
+
 
 ##### Exercise 6: Updating a record in the database
+Let's take the record we inserted in the previous exercise and update it using a SQL UPDATE statement. The format for a SQL UPDATE can be found [here](https://www.w3schools.com/sql/sql_update.asp).
 
+We want to make sure only update the record we inserted earlier. This can be done by qualifying on the LASTNAME field which we know is a unique field. The following code snippet shows how to issue a SQL UPDATE query, make sure to modify the fields and qualifier as necessary.
+```java
+sql = "UPDATE PCB01.A1111111 SET FIRSTNAME='BILBO' WHERE LASTNAME='BAGGINS'";
+Statement st = connection.createStatement();
+System.out.println("Updated " + st.executeUpdate(sql) + " record(s)");
+```
 
+After running your application, you should see similar output in your console:
+```
+Updated 1 record(s)
+
+Displaying query results
+LASTNAME: BAGGINS   
+FIRSTNAME: BILBO     
+EXTENTION: 123456A   
+ZIPCODE: 12345
+```
+
+This concludes the distributed portion of the lab. Make sure to clean up your application by going back into the `main()` method and commenting out the following lines:
+```java
+//executeASqlInsertOrUpdate();
+//executeAndDisplaySqlQuery();
+```
 
 
 ### Writing a native Java application

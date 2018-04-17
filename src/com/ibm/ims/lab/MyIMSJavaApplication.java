@@ -17,15 +17,11 @@ public class MyIMSJavaApplication {
 			// Exercise 4 - Looking at the DL/I translation of the SQL query
 			//displayDliTranslationForSqlQuery();
 			
-			// Exercise 5 - Insert a record into the database with a SQL INSERT and 
-			// validate contents
-			//executeASqlInsertOrUpdate();
-			//executeAndDisplaySqlQuery();
-						
+			// Exercise 5 - Insert a record into the database with a SQL INSERT 
 			// Exercise 6 - Updating the database with a SQL UPDATE and validate contents
 			//executeASqlInsertOrUpdate();
 			//executeAndDisplaySqlQuery();
-			
+						
 			// Exercise 7 - Establishing a native IMS connection
 			//createAnImsConnection(2);
 			
@@ -64,6 +60,9 @@ public class MyIMSJavaApplication {
 		
 		// Exercise 2 - Use the JDBC DatabaseMetadata interface to print out 
 		// database metadata information taken from the IMS catalog
+		
+		connection.commit();
+		connection.close();
 	}
 
 	private static void executeAndDisplaySqlQuery() throws Exception {
@@ -71,6 +70,9 @@ public class MyIMSJavaApplication {
 		
 		// Exercise 3 - Issue a SQL SELECT statement and display it's output
 		String sql = "SELECT * FROM PCB01.A1111111";
+		
+		connection.commit();
+		connection.close();
 	}
 
 	private static void displayDliTranslationForSqlQuery() throws Exception {
@@ -79,6 +81,9 @@ public class MyIMSJavaApplication {
 		// Exercise 4 - Use the Connection.nativeSql(String) method to display
 		// the DL/I equivalent for a sql query
 		String sql = "SELECT * FROM PCB01.A1111111";
+		
+		connection.commit();
+		connection.close();
 	}
 
 	private static void executeASqlInsertOrUpdate() throws Exception {
@@ -86,11 +91,14 @@ public class MyIMSJavaApplication {
 		Connection connection = createAnImsConnection(4);
 		
 		// Exercise 5 - Issue a SQL INSERT
-		sql = "INSERT INTO PCB01.A1111111 (LASTNAME, FIRSTNAME, EXTENTION, ZIPCODE) VALUES ('REPLACE', 'REPLACE', 'REPLACE', 'REPLACE')";
+		//sql = "INSERT INTO PCB01.A1111111 (LASTNAME, FIRSTNAME, EXTENTION, ZIPCODE) VALUES ('REPLACE', 'REPLACE', 'REPLACE', 'REPLACE')";
 		
 		
 		// Exercise 6 - Issue a SQL UPDATE
-		sql = "UPDATE PCB01.A1111111 SET FIRSTNAME='REPLACE' WHERE LASTNAME='REPLACE'";
+		//sql = "UPDATE PCB01.A1111111 SET FIRSTNAME='REPLACE' WHERE LASTNAME='REPLACE'";
+		
+		connection.commit();
+		connection.close();
 	}
 	
 	private static void executeNativeApplication() {
