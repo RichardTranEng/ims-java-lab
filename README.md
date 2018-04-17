@@ -4,10 +4,10 @@ This lab's goal is to show a Java developer how to access an IMS database throug
 
 
 
-### Getting started
+## Getting started
 This lab is designed specifically for coding Java in an Eclipse IDE. It is meant to be instructor led where the laptops are already provided pre-configured for you but you should be able to run this on your own machine as well. If you get lost at any step, feel free to reference the solution provided in the `com.ibm.ims.lab.solutions.MyIMSJavaApplication.java` file
 
-##### Pre-requisites
+### Pre-requisites
 Software: 
 * [Eclipse Neon or later](https://www.eclipse.org) 
 * [Java 7 or later](https://java.com/en/)
@@ -17,7 +17,7 @@ Skills:
 * SQL programming - Beginner level
 * IMS - Beginner level 
 
-##### Importing the Eclipse project
+### Importing the Eclipse project
 The ims-java-lab project is designed as an Eclipse project and will need to get imported into your Eclipse development environment.
 1. Open up Eclipse
 2. Accept the default workspace or specify your own
@@ -25,19 +25,19 @@ The ims-java-lab project is designed as an Eclipse project and will need to get 
 4. Choose the "Existing Projects into Workspace" option in the popup wizard and click Next
 5. Click the "Browse" button next to the "Select root directory" radio and navigate to where you downloaded the ims-java-lab project.
 
-##### Opening up the lab files
+### Opening up the lab files
 1. Once your project has been imported, you should have a **ims-java-lab** project in the **Project Explorer**. 
 2. Expand out the following folders: **ims-java-lab->src->com.ibm.ims.lab**
 3. Double click on the `MyIMSJavaApplication.java` file. The majority of your work will be done in this file.
 
 
 
-### Writing a distributed Java application
+## Writing a distributed Java application
 The first part of the lab is to develop a distributed Java application. In this case when we say distributed, we're specifically talking about any non z/OS environment that supports Java. 
 
 Connections to IMS resources on the mainframe from a distributed environment requires a TCP/IP connection through an IMS Connect TCP/IP gateway. For our distributed application, we will be connecting through a pre-configured IMS Connect that resides on a public demo system.
 
-##### Exercise 1: Creating a Type-4 JDBC connection to an IMS database
+### Exercise 1: Creating a Type-4 JDBC connection to an IMS database
 The following information is required to connect to an IMS database from an external environment
 1. Hostname/IP address of the IMS Connect
 2. Port number for the IMS Connect
@@ -104,7 +104,7 @@ Let's disable Excercise 1 before moving on by adding the comments back in the `m
 //createAnImsConnection(4).close();
 ```
 
-##### Exercise 2: Discovering the database metadata
+### Exercise 2: Discovering the database metadata
 Now that we have a connection to IMS, the next step is to discover what databases are available for access through the PSB (IVPDB1) defined in the connection from Exercise 1. This database metadata information would be stored in the IMS catalog which is IMS' trusted source for information. This information has been mapped to standard JDBC DatabaseMetadata discovery which many JDBC based tools use.
 
 The following is a mapping of terms from IMS to the relational model that the JDBC interface uses:
@@ -184,7 +184,7 @@ That completes Exercise 2. Let's go ahead and disable the following line in the 
 //displayMetadata();
 ```
 
-##### Exercise 3: Querying the database
+### Exercise 3: Querying the database
 Now that we have a good understanding of what our database looks like. We can go ahead and start building queries against the database. Let's start by uncommenting the following line in the `main()` method.
 
 ```java
@@ -211,7 +211,7 @@ ZIPCODE: D01/R01
 ```
 
 
-##### Exercise 4: Looking at how IMS breaks down SQL queries
+### Exercise 4: Looking at how IMS breaks down SQL queries
 The native query language for an IMS database is DL/I. In order for IMS to process SQL queries, those queries will need to be translated into the DL/I equivalent. Sometimes, it's useful for debugging or tuning purposes to look at how a SQL query is broken down. 
 
 So where is this translation being done? In this case, the IMS JDBC driver handles all of the translation. It exposes the translation through the `Connection.nativeSql()` method
@@ -243,7 +243,7 @@ Feel free to come back to this exercise in order to look at the translation for 
 ```
 
 
-##### Exercise 5: Inserting a record into the database
+### Exercise 5: Inserting a record into the database
 Now that we have a base understanding of what the IMS database looks like and what data resides in that database, we'll go ahead and insert in a new phonebook record. Let's start off by uncommenting the following lines in the `main()` method
 ```java
 executeASqlInsertOrUpdate();
@@ -284,7 +284,7 @@ You'll notice that the we get some AIB return and reason code in addition to a D
 Before moving on to the next exercise let's make sure we comment out any code we added to the `executeASqlInsertOrUpdate()` method.
 
 
-##### Exercise 6: Updating a record in the database
+### Exercise 6: Updating a record in the database
 Let's take the record we inserted in the previous exercise and update it using a SQL UPDATE statement. The format for a SQL UPDATE can be found [here](https://www.w3schools.com/sql/sql_update.asp).
 
 We want to make sure only update the record we inserted earlier. This can be done by qualifying on the LASTNAME field which we know is a unique field. The following code snippet shows how to issue a SQL UPDATE query, make sure to modify the fields and qualifier as necessary.
@@ -312,5 +312,5 @@ This concludes the distributed portion of the lab. Make sure to clean up your ap
 ```
 
 
-### Writing a native Java application
+## Writing a native Java application
 This covers lab exercises 7 and 8
