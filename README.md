@@ -313,4 +313,52 @@ This concludes the distributed portion of the lab. Make sure to clean up your ap
 
 
 ## Writing a native Java application
-This covers lab exercises 7 and 8
+The IMS Transaction Manager supports writing native IMS applications in Java within an IMS Java dependent region. IMS supports several different types of [dependent regions](https://www.ibm.com/support/knowledgecenter/en/SSEPH2_15.1.0/com.ibm.ims15.doc.sag/system_intro/ims_depend-regions.htm):
+* Batch Message Processing (BMP) 
+* Message Processing Program (MPP)
+* IMS Fast Path (IFP)
+* Java Message Processing (JMP)
+* Java Batch Processing (JBP)
+
+Typically when referring to the IMS Java dependent regions, we will be talking about both JMP and JBP regions. Also the JMP and JBP regions are the respective Java equivalents for MPP and BMP regions. 
+
+IMS actually supports Java in every dependent region for [language interoperability](https://developer.ibm.com/zsystems/documentation/java/ims/). The region that gets chosen will depend on what language is called first. If your application entry point is written in COBOL which then calls Java, you should be using a non-Java dependent region. If your application entry point is Java, then a Java dependent region should be used. This lab will not cover language interoperability.
+
+### Exercise 7: Writing a JBP application
+
+We will be writing a simple JBP application here that will access the same database we just looked at. Let's start by uncommenting the following line in the `main()` method.
+```java
+executeNativeApplication();
+```
+
+Within the `executeNativeApplication()` method, you'll see that the first thing we do is create a Type-2 JDBC connection. This code hasn't been implemented yet so let's go back to the `createAnImsConnection()` method and add the code for that within the following else block:
+```java
+} else if (driverType == 2) {
+  // A Type-2 JDBC connection is used for local access on the mainframe
+  // Exercise 7: Retrieve a Type-2 JDBC connection and set it to the connection object
+			
+}
+```
+
+The implementation is remarkably similar to what we did for our Type-4 connection. The only differences is that we no longer need to a host or port as we're not connecting through TCP/IP and we specify the Driver Type to be 2.
+
+After you have finished implementing the code to create a Type-2 connection, let's go back to the `executeNativeApplication()` method. You'll see that in addition to the `Connection` object, we will be working with an `Application` and a `Transaction` object. These will be used to define our unit of work. You can think of the unit of work as the scope for what actions will be committed or rollbacked. 
+
+Let's add some work within the unit of work by processing a simple SQL SELECT query to retrieve the record you had inserted and updated earlier in Exercises 5 and 6. Make sure to display it as well with `System.out.println()`. The main difference with what we did earlier is this output will not be displayed within the Eclipse console but instead to the job log for our native application.
+
+While the unit of work for this application is very small, you can have much longer running batch jobs. For long jobs you'll want to issue checkpoints in case an error occurs and you don't want to start from the beginning. This can be done by using the `Transaction.checkpoint()` and `Transaction.restart()` methods. We won't be covering this in the lab but a code sample can be found [here](https://www.ibm.com/support/knowledgecenter/en/SSEPH2_15.1.0/com.ibm.ims15.doc.apg/ims_developingjbpapps.htm).
+
+#### Exporting your native application
+Now because this is meant to be a native application, it will need to be deployed to the mainframe. In order to deploy this let's go ahead and export the project as a Java archive (JAR) file.
+
+1. Right click on the **ims-java-lab** project in the **Project Explorer** view on the left. 
+2. Select **Export...** from the context pop-up menu.
+3. Choose the **JAR File** option and click **Next**
+4. In the **Select the export destination:** input box, choose an easy to navigate to directory and provide the following file name for the jar file, *ImsJavaLab.jar*
+
+Now you have a JAR file containing your native IMS transaction that's ready for deployment
+
+#### Deploying your native application
+Deploying a native application typically requires an IMS System Programmer to setup your IMS dependent region. Some of this work can be automated using some DevOps solution such as Jenkins like the one described [here](https://github.com/imsdev/ims-devops-java-jenkins).
+
+This lab is currently designed such that you do not have System Programmer privileges. Please notify the lab instructor you are ready to deploy your native application and they will deploy and run the JBP application for you and display your custom output in the job log.

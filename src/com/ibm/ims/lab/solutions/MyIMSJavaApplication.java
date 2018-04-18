@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
+import com.ibm.ims.dli.tm.Application;
+import com.ibm.ims.dli.tm.ApplicationFactory;
+import com.ibm.ims.dli.tm.Transaction;
 import com.ibm.ims.jdbc.IMSDataSource;
 
 public class MyIMSJavaApplication {
@@ -29,10 +32,7 @@ public class MyIMSJavaApplication {
 			//executeAndDisplaySqlQuery();
 						
 			
-			// Exercise 7 - Establishing a native IMS connection
-			//createAnImsConnection(2);
-			
-			// Exercise 8 - Writing a native IMS application
+			// Exercise 7 - Writing a native IMS application
 			//executeNativeApplication();
 			
 			
@@ -71,6 +71,12 @@ public class MyIMSJavaApplication {
 		} else if (driverType == 2) {
 			// A Type-2 JDBC connection is used for local access on the mainframe
 			// Exercise 7: Retrieve a Type-2 JDBC connection and set it to the connection object
+			//IMSDataSource ds = new IMSDataSource();
+			//ds.setDriverType(driverType);
+			//ds.setUser("myUser");
+			//ds.setPassword("myPass");
+			//ds.setDatabaseName("xml://PHIDPHO1");
+			//connection = ds.getConnection();
 			
 		} else {
 			throw new Exception("Invalid driver type specified: " + driverType);
@@ -183,7 +189,33 @@ public class MyIMSJavaApplication {
 		connection.close();
 	}
 	
-	private static void executeNativeApplication() {
-		// Exercise 8 - Write a native IMS JBP application
+	private static void executeNativeApplication() throws Exception {
+		// Exercise 7 - Write a native IMS JBP application
+		Connection connection = createAnImsConnection(2);
+		
+		// Start the unit of work
+		Application app = ApplicationFactory.createApplication();
+        Transaction transaction = app.getTransaction();
+        
+		// Do some work by displaying your inserted record
+		//String sql = "SELECT * FROM PCB01.A1111111 WHERE LASTNAME='BAGGINS'";
+		
+		//Statement st = connection.createStatement();
+		//ResultSet rs = st.executeQuery(sql);
+		//ResultSetMetaData rsmd = rs.getMetaData();
+		//int colCount = rsmd.getColumnCount();
+		
+		//System.out.println("\nDisplaying query results");
+		//while (rs.next()) {
+		//	for (int i = 1; i <= colCount; i++) {
+		//		System.out.println(rsmd.getColumnName(i) + ": " + rs.getString(i));
+		//	}
+		//	System.out.println();
+		//}
+		
+		// Commit your unit of work and cleanup your code
+		connection.close();
+		transaction.commit();
+		app.end();
 	}
 }

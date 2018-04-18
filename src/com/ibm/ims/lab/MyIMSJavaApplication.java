@@ -1,6 +1,13 @@
 package com.ibm.ims.lab;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+
+import com.ibm.ims.dli.tm.Application;
+import com.ibm.ims.dli.tm.ApplicationFactory;
+import com.ibm.ims.dli.tm.Transaction;
 
 public class MyIMSJavaApplication {
 	public static void main(String[] args) {
@@ -22,10 +29,7 @@ public class MyIMSJavaApplication {
 			//executeASqlInsertOrUpdate();
 			//executeAndDisplaySqlQuery();
 						
-			// Exercise 7 - Establishing a native IMS connection
-			//createAnImsConnection(2);
-			
-			// Exercise 8 - Writing a native IMS application
+			// Exercise 7 - Writing a native IMS application
 			//executeNativeApplication();
 			
 			
@@ -101,7 +105,20 @@ public class MyIMSJavaApplication {
 		connection.close();
 	}
 	
-	private static void executeNativeApplication() {
-		// Exercise 8 - Write a native IMS JBP application
+	private static void executeNativeApplication() throws Exception {
+		// Exercise 7 - Write a native IMS JBP application
+		Connection connection = createAnImsConnection(2);
+		
+		// Start the unit of work
+		Application app = ApplicationFactory.createApplication();
+        Transaction transaction = app.getTransaction();
+        
+		// Do some work by displaying your updated record
+		String sql = "SELECT * FROM PCB01.A1111111 WHERE LASTNAME='REPLACE'";
+		
+		// Commit your unit of work and cleanup your code
+		connection.close();
+		transaction.commit();
+		app.end();
 	}
 }
