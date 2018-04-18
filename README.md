@@ -137,8 +137,9 @@ int colCount = rsmd.getColumnCount();
 		
 System.out.println("Displaying IMS PCB metadata");
 while (rs.next()) {
-for (int i = 1; i <= colCount; i++) {
-  System.out.println(rsmd.getColumnName(i) + ": " + rs.getString(i));
+  for (int i = 1; i <= colCount; i++) {
+    System.out.println(rsmd.getColumnName(i) + ": " + rs.getString(i));
+  }
 }
 ```
 
