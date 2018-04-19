@@ -217,7 +217,12 @@ The native query language for an IMS database is DL/I. In order for IMS to proce
 
 So where is this translation being done? In this case, the IMS JDBC driver handles all of the translation. It exposes the translation through the `Connection.nativeSql()` method
 
-Let's take a look at the the translation for the previous SQL query with the following code snippet:
+Let's start by uncommenting the following line in the `main()` method.
+```java
+displayDliTranslationForSqlQuery()
+```
+
+Let's take a look at the the translation for the previous SQL query by adding the following code snippet to the `displayDliTranslationForSqlQuery()` method:
 ```java
 String sql = "SELECT * FROM PCB01.A1111111";
 System.out.println("DL/I translation for '" + sql + "' is:");
