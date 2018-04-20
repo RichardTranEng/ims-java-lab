@@ -37,6 +37,8 @@ The first part of the lab is to develop a distributed Java application. In this 
 
 Connections to IMS resources on the mainframe from a distributed environment requires a TCP/IP connection through an IMS Connect TCP/IP gateway. For our distributed application, we will be connecting through a pre-configured IMS Connect that resides on a public demo system.
 
+We will cover two different query languages in this lab. Exercises 1 through 7 will cover use the IMS JDBC driver to issue SQL queries and Exercises 8 through 10 will cover using the IMS Java DL/I API to issue DL/I queries.
+
 ### Exercise 1: Creating a Type-4 JDBC connection to an IMS database
 The following information is required to connect to an IMS database from an external environment
 1. Hostname/IP address of the IMS Connect
@@ -318,6 +320,116 @@ This concludes the distributed portion of the lab. Make sure to clean up your ap
 ```
 
 
+### Exercise 7: Creating a distributed DL/I connection
+We're now going to shift over to the DL/I programming model. This is the native query language used by IMS. Typically, the only times people would use this is if they're issuing a DL/I call that doesn't have a SQL equivalent (such as Get Next In Parent (GNP) call) or when they're converting an existing application where the DL/I queries are already defined from one language (e.g., COBOL, PL/I) to Java .
+
+Before we start coding let's quickly talk about PSBs. A PSB is the entry point into any IMS resource. For the IMS Java DL/I API, we will essentially be using the PSB to represent a physical connection to an IMS database. Most actions that you use to do on a JDBC `Connection` object, you could do the same to the `PSB` object. We'll see other similarities as well between the two interfaces but the main ones to keep in mind are:
+* **Connection** == **PSB**
+* **Statement** == **PCB**
+* **ResultSet** == **PathSet**
+
+Let's again start by uncommenting the following line in the `main()` method:
+```java
+createAnImsDliConnection(4).close();
+```
+
+Now navigate to the `createAnImsDliConnection()` method where we will implement the distributed (Type-4) connection.
+
+We will again reuse the same connection information from our JDBC connection for this. This is because both APIs take advantage of the same back end systems including the IMS Connect TCP/IP gateway.
+
+You'll first want to instantiate an `IMSConnectionSpec` object to hold all of the connection properties. The following code snippet shows how to do that:
+```java
+IMSConnectionSpec imsConnSpec = IMSConnectionSpecFactory.createIMSConnectionSpec();
+imsConnSpec.setDatastoreServer("sample.host.name");
+imsConnSpec.setPortNumber(5555);
+imsConnSpec.setDatabaseName("xml://PHIDPHO1");
+imsConnSpec.setUser("myUser");
+imsConnSpec.setPassword("myPass");
+imsConnSpec.setDriverType(driverType);
+```
+
+Notice that the main difference here from what we did with the `IMSDataSource` object in Exercise 1, is we use `IMSConnectionSpec.setDatastoreServer()` instead of `IMSDataSource.setHost()` but they both point to the same hostname or ip address for your IMS Connect.
+
+You can validate you are getting a valid connection when you run this if you see the same output from Exercise 1:
+```
+Apr 19, 2018 7:23:50 PM com.ibm.ims.dli.PSBInternalFactory createPSB
+INFO: IMS Universal Drivers build number: 14066
+Apr 19, 2018 7:23:51 PM com.ibm.ims.drda.t4.T4ConnectionReply checkServerCompatibility
+INFO: Server IMS Connect DDM level:  1
+Apr 19, 2018 7:23:51 PM com.ibm.ims.drda.t4.T4ConnectionReply checkServerCompatibility
+INFO: Client IMS Connect DDM level:  1
+Apr 19, 2018 7:23:51 PM com.ibm.ims.drda.t4.T4ConnectionReply checkServerCompatibility
+INFO: Server ODBM DDM level:  1 2 3 4 5 6 7
+Apr 19, 2018 7:23:51 PM com.ibm.ims.drda.t4.T4ConnectionReply checkServerCompatibility
+INFO: Client ODBM DDM level:  1 2 3 4 5 6 7
+```
+
+Now that our connection code is good, go back and comment out the following line in your `main()` method:
+```java
+//createAnImsDliConnection(4).close();
+```
+
+### Exercise 8: Read all records from the database using GU/GN calls
+Now that we have a connection lets go ahead and retrieve all records from the database. This would be the equivalent of a `SELECT * FROM PCB01.A1111111` SQL query. In Exercise 4, we saw that such a query translated to the following in DL/I:
+```
+GU   A1111111 
+
+(LOOP)
+GN   A1111111 
+```
+
+So we know we will be issuing a Get Unique (GU) call and then looping through a bunch of Get Next (GN) calls with a SSA List of A1111111. Let's go ahead and uncomment the following line in the `main()` method.
+```java
+readAllRecordsWithDliGuGnCalls();
+```
+
+Inside the `readAllRecordsWithDliGuGnCalls()` method, we will take advantage of the `createAnImsDliConnection()` you wrote previously. From that we will get a `PSB` object which we will then used to retrieve a `PCB` and from that we will get a `SSAList` and finally a `Path` object. The following code snippet shows how to create each of those objects.
+```java
+PCB pcb = psb.getPCB("PCB01");
+SSAList ssaList = pcb.getSSAList("A1111111");
+Path path = ssaList.getPathForRetrieveReplace();
+```
+
+So the SSA list here is used for our qualification statement. Because we're retrieving all records, we only need to specify the segment name *A1111111* within the SSAList.
+
+You can think of the Path object as a byte buffer that we will use to store record data. In this case we are preallocating the space to store the record once we retrieve it.
+
+Now that we have all the necessary components, let's issue our GU call. Remember how earlier we said a `PCB` in the DL/I API works similarly to a `Statement` in JDBC. So instead of doing a `Statement.executeQuery()`, we will issue a `PCB.getUnique()` as shown below:
+```java
+pcb.getUnique(path, ssaList, false);
+```
+
+Now wait what is that third parameter used for? It's actually to denote whether we are doing a hold call which will preserve positioning within the IMS database. This would cause a Get Hold Unique (GHU) call to be flowed instead of a GU. In this case since we're just doing read operations, we will just set it to false.
+
+The `PCB.getUnique()` method should populate our `Path` object that we passed in. Go ahead and display the data that was retrieved. The following code shows how to do that for the **FIRSTNAME** and **LASTNAME** fields.
+```java
+System.out.println("FIRSTNAME: " + path.getString("FIRSTNAME"));
+System.out.println("LASTNAME: " + path.getString("LASTNAME"));
+```
+
+We should of gotten console output similar to the following:
+```
+FIRSTNAME: BILBO      
+LASTNAME: BAGGINS  
+```
+
+Now let's retrieve the remaining records using the `PCB.getNext()` method. Remember that we'll want to loop through this. The `PCB.getNext()` method will return a boolean value indicating whether another record exists in the database. Lets do a simple `while` loop to process and display data from the remaining records.
+```java
+while(pcb.getNext(path, ssaList, false)) {
+	System.out.println("FIRSTNAME: " + path.getString("FIRSTNAME"));
+}
+```
+
+Run your application and validate your output looks like what you would expect. Once you're satisfied, go back to the `main()` method and comment out the following line:
+```java
+//readAllRecordsWithDliGuGnCalls();
+```
+
+### Exercise 9: TBD
+
+### Exercise 10: TBD
+
+
 ## Writing a native Java application
 The IMS Transaction Manager supports writing native IMS applications in Java within an IMS Java dependent region. IMS supports several different types of [dependent regions](https://www.ibm.com/support/knowledgecenter/en/SSEPH2_15.1.0/com.ibm.ims15.doc.sag/system_intro/ims_depend-regions.htm):
 * Batch Message Processing (BMP) 
@@ -330,7 +442,7 @@ Typically when referring to the IMS Java dependent regions, we will be talking a
 
 IMS actually supports Java in every dependent region for [language interoperability](https://developer.ibm.com/zsystems/documentation/java/ims/). The region that gets chosen will depend on what language is called first. If your application entry point is written in COBOL which then calls Java, you should be using a non-Java dependent region. If your application entry point is Java, then a Java dependent region should be used. This lab will not cover language interoperability.
 
-### Exercise 7: Writing a JBP application
+### Exercise 11: Writing a JBP application
 
 We will be writing a simple JBP application here that will access the same database we just looked at. Let's start by uncommenting the following line in the `main()` method.
 ```java

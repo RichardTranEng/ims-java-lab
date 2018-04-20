@@ -5,6 +5,13 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 
+import com.ibm.ims.dli.IMSConnectionSpec;
+import com.ibm.ims.dli.IMSConnectionSpecFactory;
+import com.ibm.ims.dli.PCB;
+import com.ibm.ims.dli.PSB;
+import com.ibm.ims.dli.PSBFactory;
+import com.ibm.ims.dli.Path;
+import com.ibm.ims.dli.SSAList;
 import com.ibm.ims.dli.tm.Application;
 import com.ibm.ims.dli.tm.ApplicationFactory;
 import com.ibm.ims.dli.tm.Transaction;
@@ -29,10 +36,21 @@ public class MyIMSJavaApplication {
 			//executeASqlInsertOrUpdate();
 			//executeAndDisplaySqlQuery();
 						
-			// Exercise 7 - Writing a native IMS application
+			// Exercise 7 - Establishing a distributed IMS DL/I Connection
+			//createAnImsDliConnection(4).close();
+						
+			// Exercise 8 - Read all records with GU and GN DL/I calls
+			//readAllRecordsWithDliGuGnCalls();
+			
+			// Exercise 9 - Read a specific record with a DL/I GU call and a qualification
+			//readASpecificRecordWithDliGu();
+
+			// Exercise 10 - Update a specific record with a DL/I GHU and REPL call
+			//updateASpecificRecordWithDliGhuRepl();
+			//readASpecificRecordWithDliGu();
+			
+			// Exercise 11 - Writing a native IMS application
 			//executeNativeApplication();
-			
-			
 		} catch (Exception e) {
 			System.out.println("Abnormal error occurred: " + e.getMessage());
 			e.printStackTrace();
@@ -105,8 +123,59 @@ public class MyIMSJavaApplication {
 		connection.close();
 	}
 	
+	private static PSB createAnImsDliConnection(int driverType) throws Exception {
+		PSB psb = null;
+		
+		if (driverType == 4) {
+			// Exercise 7: Create a distributed DL/I connection and a PSB object
+			// Define your connection properties
+			IMSConnectionSpec imsConnSpec = IMSConnectionSpecFactory.createIMSConnectionSpec();
+			
+			// Create your PSB object
+			psb = PSBFactory.createPSB(imsConnSpec);
+		} else if (driverType == 2) {
+			IMSConnectionSpec imsConnSpec = IMSConnectionSpecFactory.createIMSConnectionSpec();
+			
+			psb = PSBFactory.createPSB(imsConnSpec);
+		} else {
+			throw new Exception("Invalid driver type specified: " + driverType);
+		}
+		
+		return psb;
+	}
+	
+	private static void readAllRecordsWithDliGuGnCalls() throws Exception {
+		PSB psb = createAnImsDliConnection(4);
+		
+		// Exercise 8 - Read from the database using GU/GN calls
+		// Prepare and issue the GU call
+		
+		psb.commit();
+		psb.close();
+	}
+	
+	private static void readASpecificRecordWithDliGu() throws Exception {
+		PSB psb = createAnImsDliConnection(4);
+		
+		// Exercise 9 - Read a specific record with a DL/I GU call and a qualification
+		// Prepare and issue the GU call
+		
+		psb.commit();
+		psb.close();
+	}
+	
+	private static void updateASpecificRecordWithDliGhuRepl() throws Exception {
+		PSB psb = createAnImsDliConnection(4);
+		
+		// Exercise 10 - Position on a specific record with a DL/I GHU call and a qualification
+		// Prepare and issue the GHU call
+
+		psb.commit();
+		psb.close();
+	}
+	
 	private static void executeNativeApplication() throws Exception {
-		// Exercise 7 - Write a native IMS JBP application
+		// Exercise 11 - Write a native IMS JBP application
 		Connection connection = createAnImsConnection(2);
 		
 		// Start the unit of work
