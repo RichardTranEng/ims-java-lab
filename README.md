@@ -425,9 +425,81 @@ Run your application and validate your output looks like what you would expect. 
 //readAllRecordsWithDliGuGnCalls();
 ```
 
-### Exercise 9: TBD
+### Exercise 9: Reading a specific record with a DL/I GU call
+This exercise will be very similar to the previous one except we will be retrieving just one specific record. To be precise, we will be retrieving the record that was inserted in Exercise 5. Let's start by uncommenting the following line in the `main()` method and then navigating to the `readASpecificRecordWithDliGu()` method
+```java
+readASpecificRecordWithDliGu();
+```
 
-### Exercise 10: TBD
+Essentially we want to issue a query similar to the following:
+`SELECT * FROM PCB01.A1111111 WHERE LASTNAME='BAGGINS'`
+
+Feel free to run your specific query through the translation but essentially the equivalent query will look like the following:
+```
+GU   A1111111(A1111111EQBAGGINS   )
+```
+
+The first A111111 is the name of our segment. The second A1111111 is actually the key field represented by LASTNAME. You can actually see the mapping if you looked at the XML metadata for that:
+```xml
+<field name="LASTNAME" imsName="A1111111" seqType="U" imsDatatype="C">
+    <startPos>1</startPos>
+    <bytes>10</bytes>
+    <marshaller encoding="Cp1047">
+        <typeConverter>CHAR</typeConverter>
+    </marshaller>
+    <applicationDatatype datatype="CHAR"/>
+</field>
+```
+
+So basically the code should be the same as Exercise 8 except for where we build the qualification statement. To get the following **A1111111(A1111111EQBAGGINS   )**, you would use the following code sample:
+```java
+SSAList ssaList = pcb.getSSAList("A1111111");
+ssaList.addInitialQualification("A1111111", "LASTNAME", SSAList.EQUALS, "BAGGINS");
+```
+
+Once you're done coding and validating your output, go back to the `main()` method and comment out the following line:
+```java
+//readASpecificRecordWithDliGu();
+```
+
+### Exercise 10: Updating a specific record with a DL/I GU and REPL call
+In this exercise we will update the record that we just retrieved. Uncomment the following lines in the `main()` method and then navigate to the `updateASpecificRecordWithDliGhuRepl()` method.
+```java
+updateASpecificRecordWithDliGhuRepl();
+readASpecificRecordWithDliGu();
+```
+
+Here we will be writing the equivalent of the following SQL statement:
+`UPDATE PCB01.A1111111 SET FIRSTNAME='FRODO' WHERE LASTNAME='BAGGINS'`
+ 
+Feel free to run your specific SQL through the translator but in general the DL/I equivalent should look like the following:
+```
+GHU  A1111111(A1111111EQBAGGINS   )
+REPL
+```
+
+The first call is very similar to the GU statement we issued in Exercise 9. The main difference is now we're doing a GHU instead of GU which if you remember is toggled through the boolean parameter of the `PCB.getUnique()` method. This will save our position in the database so we can perform our update.
+
+Here's the code for the GHU call:
+```java
+PCB pcb = psb.getPCB("PCB01");
+SSAList ssaList = pcb.getSSAList("A1111111");
+ssaList.addInitialQualification("A1111111", "LASTNAME", SSAList.EQUALS, "BAGGINS");
+Path path = ssaList.getPathForRetrieveReplace();
+pcb.getUnique(path, ssaList, true);
+```
+
+Now the Path object here contains the current row data. We'll want to update the values in the path object and then push it back to the database with the `PCB.replace()` method. In the following example we're updating the **FIRSTNAME** back to *FRODO* from *BILBO*.
+```java
+path.setString("FIRSTNAME", "FRODO");
+pcb.replace(path);
+```
+
+Run the application and validate that your record was indeed updated. Once you're satisfied go back to the `main()` method and comment the following lines:
+```java
+//updateASpecificRecordWithDliGhuRepl();
+//readASpecificRecordWithDliGu();
+```
 
 
 ## Writing a native Java application
