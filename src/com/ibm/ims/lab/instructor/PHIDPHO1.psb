@@ -1,0 +1,42 @@
+***********************************************************************
+*    DB  PCB NUMBER 1           HIDAM PHONEBOOK DB DHIDPHO1
+***********************************************************************
+  PCB       TYPE=DB,DBDNAME=DHIDPHO1,PROCOPT=AP,KEYLEN=10,             C
+               PCBNAME=PCB01,EXTERNALNAME=PCB01
+    SENSEG NAME=A1111111,PARENT=0
+***********************************************************************
+*    DB  PCB NUMBER 2           HIDAM PHONEBOOK DB DHIDPHO1
+***********************************************************************
+  PCB       TYPE=DB,DBDNAME=DHIDPHO1,PROCOPT=GP,KEYLEN=10,             C
+               PCBNAME=PCB02,EXTERNALNAME=DHIDPHO1GP
+    SENSEG NAME=A1111111,PARENT=0
+***********************************************************************
+*    DB  PCB NUMBER 3           HIDAM PHONEBOOK DB DHIDPHO1
+***********************************************************************
+  PCB       TYPE=DB,DBDNAME=DHIDPHO1,PROCOPT=GOP,KEYLEN=10,            C
+               PCBNAME=PCB03,EXTERNALNAME=DHIDPHO1GOP
+    SENSEG NAME=A1111111,PARENT=0
+***********************************************************************
+*    DB  PCB NUMBER 4           HIDAM PHONEBOOK DB DHIDPHO1
+***********************************************************************
+  PCB       TYPE=DB,DBDNAME=DHIDPHO1,PROCOPT=IP,KEYLEN=10,             C
+               PCBNAME=PCB04,EXTERNALNAME=DHIDPHO1IP
+    SENSEG NAME=A1111111,PARENT=0
+***********************************************************************
+*    DB  PCB NUMBER 5           HIDAM PHONEBOOK DB DHIDPHO1
+***********************************************************************
+  PCB       TYPE=DB,DBDNAME=DHIDPHO1,PROCOPT=RP,KEYLEN=10,             C
+               PCBNAME=PCB05,EXTERNALNAME=DHIDPHO1RP
+    SENSEG NAME=A1111111,PARENT=0
+***********************************************************************
+*    DB  PCB NUMBER 6           HIDAM PHONEBOOK DB DHIDPHO1
+***********************************************************************
+  PCB       TYPE=DB,DBDNAME=DHIDPHO1,PROCOPT=DP,KEYLEN=10,             C
+               PCBNAME=PCB06,EXTERNALNAME=DHIDPHO1DP
+    SENSEG NAME=A1111111,PARENT=0
+***********************************************************************
+*        PSBGEN PSBNAME=PHIDPHO1
+***********************************************************************
+    PSBGEN  PSBNAME=PHIDPHO1,LANG=ASSEM,CMPAT=YES,IOASIZE=32000,       C
+               SSASIZE=32000
+    END

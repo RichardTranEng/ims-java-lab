@@ -1,0 +1,26 @@
+   DBD      NAME=DHIDPHO1,                                             C
+               ENCODING=Cp1047,                                        C
+               ACCESS=(HIDAM,OSAM)
+   DATASET  DD1=PHO1DD,                                                C
+               DEVICE=3380,                                            C
+               SIZE=2048
+
+   SEGM     NAME=A1111111,                                             C
+               PARENT=0,                                               C
+               BYTES=40,                                               C
+               RULES=(LLV,LAST),                                       C
+               PTR=(TB,CTR)
+
+   FIELD    NAME=(A1111111,SEQ,U),                                     C
+               EXTERNALNAME=A1111111,                                  C
+               BYTES=010,                                              C
+               START=00001,                                            C
+               TYPE=C,                                                 C
+               DATATYPE=CHAR
+   DFSMARSH ENCODING=Cp1047,                                           C
+               INTERNALTYPECONVERTER=CHAR
+
+   LCHILD NAME=(A1,DIPHO1),POINTER=INDX,RULES=LAST
+   DBDGEN
+   FINISH
+   END

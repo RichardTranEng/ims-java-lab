@@ -67,7 +67,7 @@ public class MyIMSJavaApplication {
 			
 		} else if (driverType == 2) {
 			// A Type-2 JDBC connection is used for local access on the mainframe
-			// Exercise 7: Retrieve a Type-2 JDBC connection and set it to the connection object
+			// Exercise 11: Retrieve a Type-2 JDBC connection and set it to the connection object
 			
 		} else {
 			throw new Exception("Invalid driver type specified: " + driverType);
