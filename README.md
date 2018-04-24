@@ -30,7 +30,10 @@ The ims-java-lab project is designed as an Eclipse project and will need to get 
 2. Expand out the following folders: **ims-java-lab->src->com.ibm.ims.lab**
 3. Double click on the `MyIMSJavaApplication.java` file. The majority of your work will be done in this file.
 
-
+### Adding the IMS JDBC driver to your project
+You'll notice that the you'll have a build path error for a required library. That library is the IMS Universal JDBC driver which was not bundled as part of this sample for legal reasons. 
+1. Download the [IMS Universal JDBC driver](https://www.ibm.com/it-infrastructure/z/ims/resources)
+2. Copy the imsudb.jar file to the **lib/** directory in your **ims-java-lab** project
 
 ## Writing a distributed Java application
 The first part of the lab is to develop a distributed Java application. In this case when we say distributed, we're specifically talking about any non z/OS environment that supports Java. 
